@@ -5,20 +5,32 @@
   <title>Baraa's Gym Tracker</title>
   <style>
     body {
-      background-color: skyblue;
+      background-color: black;
+      color: white;
       font-family: Arial, sans-serif;
+    }
+
+    input, textarea, button {
+      background-color: #222;
+      color: white;
+      border: 1px solid #555;
+      padding: 5px;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #444;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1>🏋️‍♂️ Bob's Gym Tracker</h1>
+  <h1>🏋️‍♂️ Baraa's Gym Tracker</h1>
 
   <form id="gymForm">
     <label>Date: <input type="date" name="date" required></label><br><br>
-    <label>Weight (kg): <input type="number" name="weight" required></label><br><br>
-    <label>Workout Type: <input type="text" name="workout" required></label><br><br>
-    <label>Arm Size (cm): <input type="number" name="armSize"></label><br><br>
-    <label>Chest Size (cm): <input type="number" name="chestSize"></label><br><br>
+    <label>Weight (kg): <input type="text" name="weight" required></label><br><br>
+    <label>Arm Size (cm): <input type="text" name="armSize"></label><br><br>
     <label>Notes:<br>
       <textarea name="notes" rows="4" cols="40"></textarea>
     </label><br><br>
@@ -35,16 +47,20 @@
     form.addEventListener('submit', function(event) {
       event.preventDefault();
       const formData = new FormData(form);
+
+      // Replace comma with dot
+      let weight = formData.get('weight').replace(',', '.');
+      let armSize = formData.get('armSize').replace(',', '.');
+
       const entry = `
         <li>
           <strong>${formData.get('date')}</strong> - 
-          ${formData.get('workout')} | 
-          Weight: ${formData.get('weight')}kg | 
-          Arm: ${formData.get('armSize')}cm | 
-          Chest: ${formData.get('chestSize')}cm 
+          Weight: ${weight} kg | 
+          Arm: ${armSize} cm
           <br>📝 ${formData.get('notes')}
         </li>
       `;
+
       entriesList.innerHTML += entry;
       form.reset();
     });
