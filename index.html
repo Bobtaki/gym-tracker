@@ -3,34 +3,84 @@
 <head>
   <meta charset="UTF-8">
   <title>Baraa's Gym Tracker</title>
-  <style>
-    body {
-      background-color: black;
-      color: white;
-      font-family: Arial, sans-serif;
-    }
+  <script type="module">
+    // Firebase imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
-    input, textarea, button {
-      background-color: #222;
-      color: white;
-      border: 1px solid #555;
-      padding: 5px;
-      border-radius: 5px;
-    }
+    // Your config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDj3QNGXbrSv8qkjLfJ3pYczJIDfLsPD7g",
+      authDomain: "gym-tracker-57601.firebaseapp.com",
+      projectId: "gym-tracker-57601",
+      storageBucket: "gym-tracker-57601.appspot.com",
+      messagingSenderId: "236653829376",
+      appId: "1:236653829376:web:11bbd28417a9411153a7e5",
+      measurementId: "G-PT35LQHGXM"
+    };
 
-    button:hover {
-      background-color: #444;
-      cursor: pointer;
-    }
-  </style>
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      const form = document.getElementById('gymForm');
+      const entriesList = document.getElementById('entriesList');
+
+      // Load existing entries from Firebase
+      const querySnapshot = await getDocs(collection(db, "entries"));
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const item = document.createElement('li');
+        item.innerHTML = `
+          <strong>${data.date}</strong> - 
+          ${data.workout} | 
+          Weight: ${data.weight}kg | 
+          Arm: ${data.armSize}cm | 
+          Chest: ${data.chestSize}cm 
+          <br>📝 ${data.notes}
+        `;
+        entriesList.appendChild(item);
+      });
+
+      // Handle form submit
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData(form);
+        const newEntry = {
+          date: formData.get('date'),
+          weight: formData.get('weight'),
+          workout: formData.get('workout'),
+          armSize: formData.get('armSize'),
+          chestSize: formData.get('chestSize'),
+          notes: formData.get('notes')
+        };
+        await addDoc(collection(db, "entries"), newEntry);
+
+        // Add to UI
+        const item = document.createElement('li');
+        item.innerHTML = `
+          <strong>${newEntry.date}</strong> - 
+          ${newEntry.workout} | 
+          Weight: ${newEntry.weight}kg | 
+          Arm: ${newEntry.armSize}cm | 
+          Chest: ${newEntry.chestSize}cm 
+          <br>📝 ${newEntry.notes}
+        `;
+        entriesList.appendChild(item);
+        form.reset();
+      });
+    });
+  </script>
 </head>
 <body>
   <h1>🏋️‍♂️ Baraa's Gym Tracker</h1>
 
   <form id="gymForm">
     <label>Date: <input type="date" name="date" required></label><br><br>
-    <label>Weight (kg): <input type="text" name="weight" required></label><br><br>
-    <label>Arm Size (cm): <input type="text" name="armSize"></label><br><br>
+    <label>Weight (kg): <input type="number" name="weight" required></label><br><br>
+    <label>Workout Type: <input type="text" name="workout" required></label><br><br>
+    <label>Arm Size (cm): <input type="number" name="armSize"></label><br><br>
+    <label>Chest Size (cm): <input type="number" name="chestSize"></label><br><br>
     <label>Notes:<br>
       <textarea name="notes" rows="4" cols="40"></textarea>
     </label><br><br>
@@ -39,31 +89,5 @@
 
   <h2>🗂️ My Entries</h2>
   <ul id="entriesList"></ul>
-
-  <script>
-    const form = document.getElementById('gymForm');
-    const entriesList = document.getElementById('entriesList');
-
-    form.addEventListener('submit', function(event) {
-      event.preventDefault();
-      const formData = new FormData(form);
-
-      // Replace comma with dot
-      let weight = formData.get('weight').replace(',', '.');
-      let armSize = formData.get('armSize').replace(',', '.');
-
-      const entry = `
-        <li>
-          <strong>${formData.get('date')}</strong> - 
-          Weight: ${weight} kg | 
-          Arm: ${armSize} cm
-          <br>📝 ${formData.get('notes')}
-        </li>
-      `;
-
-      entriesList.innerHTML += entry;
-      form.reset();
-    });
-  </script>
 </body>
 </html>
