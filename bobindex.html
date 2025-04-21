@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Baraa's Gym Tracker</title>
+</head>
+<body>
+  <h1>🏋️‍♂️ bob's Gym Tracker</h1>
+
+  <form id="gymForm">
+    <label>Date: <input type="date" name="date" required></label><br><br>
+    <label>Weight (kg): <input type="number" name="weight" required></label><br><br>
+    <label>Workout Type: <input type="text" name="workout" required></label><br><br>
+    <label>Arm Size (cm): <input type="number" name="armSize"></label><br><br>
+    <label>Chest Size (cm): <input type="number" name="chestSize"></label><br><br>
+    <label>Notes:<br>
+      <textarea name="notes" rows="4" cols="40"></textarea>
+    </label><br><br>
+    <button type="submit">Save Workout</button>
+  </form>
+
+  <h2>🗂️ My Entries</h2>
+  <ul id="entriesList"></ul>
+
+  <script>
+    const form = document.getElementById('gymForm');
+    const entriesList = document.getElementById('entriesList');
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const formData = new FormData(form);
+      const entry = `
+        <li>
+          <strong>${formData.get('date')}</strong> - 
+          ${formData.get('workout')} | 
+          Weight: ${formData.get('weight')}kg | 
+          Arm: ${formData.get('armSize')}cm | 
+          Chest: ${formData.get('chestSize')}cm 
+          <br>📝 ${formData.get('notes')}
+        </li>
+      `;
+      entriesList.innerHTML += entry;
+      form.reset();
+    });
+  </script>
+</body>
+</html>
